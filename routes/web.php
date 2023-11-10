@@ -26,9 +26,15 @@ Route::get('/dashboard', function () {
 
 
 
-Route::resource('games', GameController::class)
-    ->only(['index', 'search'])
-    ->middleware(['auth', 'verified', 'store']);
+Route::get('/', [GameController::class, 'index']);
+Route::get('/games', [GameController::class, 'index'])->name('games.index');
+
+Route::post('/games/search', [GameController::class, 'search'])->name("games.search");
+
+
+// Route::resource('games', GameController::class)
+//     ->only(['index', 'search'])
+//     ->middleware(['auth', 'verified']);
 
 
 
