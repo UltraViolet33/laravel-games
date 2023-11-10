@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class GameController extends Controller
@@ -19,10 +20,11 @@ class GameController extends Controller
         if($request->isMethod("post"))
         {
             $gameSearch = $request->validate([
-                'game' => 'required|string|max:255',
+                'search' => 'required|string|max:255',
             ]);
 
-            dd("hee");
+            $games = $this->searchGame($gameSearch["search"]);
+            
 
         }
 
@@ -30,9 +32,16 @@ class GameController extends Controller
     }
 
 
-    public function search()
+    public function searchGame(string $gameSearch): array 
     {
+        $key = env("API_RAWG_KEY");
+        $apiUrl = env("API_URL");
+        
+        $url = "$apiUrl/games?key=$key&search=$gameSearch";
 
+        $response = Http::get($url);
+        
+        return $response->object()->results;
     }
 
     /**
