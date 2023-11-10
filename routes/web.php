@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
+Route::post('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
 
 Route::post('/games/search', [GameController::class, 'search'])->name("games.search");
 

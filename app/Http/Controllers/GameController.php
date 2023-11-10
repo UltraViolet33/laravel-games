@@ -11,9 +11,22 @@ class GameController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        return view('games.index');
+
+        $games = [];
+
+        if($request->isMethod("post"))
+        {
+            $gameSearch = $request->validate([
+                'game' => 'required|string|max:255',
+            ]);
+
+            dd("hee");
+
+        }
+
+        return view('games.index', ['games' => $games]);
     }
 
 
