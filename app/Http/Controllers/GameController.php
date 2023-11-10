@@ -40,8 +40,6 @@ class GameController extends Controller
 
     public function addFavorite(int $id, Request $request)
     {
-
-
         $gameDetails =  $this->getDetailsGame($id);
 
         $newGame = new Game();
@@ -62,7 +60,6 @@ class GameController extends Controller
     public function displayFavoriteGames(Request $request)
     {
         $games = $request->user()->games;
-
 
         return view('games.favorites', ['games' => $games]);
     }
