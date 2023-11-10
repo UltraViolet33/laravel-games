@@ -17,30 +17,78 @@ class GameController extends Controller
 
         $games = [];
 
-        if($request->isMethod("post"))
-        {
+        if ($request->isMethod("post")) {
             $gameSearch = $request->validate([
                 'search' => 'required|string|max:255',
             ]);
 
             $games = $this->searchGame($gameSearch["search"]);
-            
-
         }
 
         return view('games.index', ['games' => $games]);
     }
 
+    public function removeFavoritesGame(int $id, Request $request)
+    {
+        $game = Game::find($id);
 
-    public function searchGame(string $gameSearch): array 
+        $request->user()->games()->detach($game);
+
+        return redirect('/games/favorites');
+
+    }
+
+    public function addFavorite(int $id, Request $request)
+    {
+
+
+        $gameDetails =  $this->getDetailsGame($id);
+
+        $newGame = new Game();
+
+        $newGame->name = $gameDetails->name;
+
+        $newGame->imagePath = $gameDetails->background_image;
+        $newGame->description = $gameDetails->description;
+
+        $newGame->save();
+
+        $request->user()->games()->attach($newGame->id);
+
+        return redirect('/games/favorites');
+    }
+
+
+    public function displayFavoriteGames(Request $request)
+    {
+        $games = $request->user()->games;
+
+
+        return view('games.favorites', ['games' => $games]);
+    }
+
+    public function getDetailsGame(int $id)
     {
         $key = env("API_RAWG_KEY");
         $apiUrl = env("API_URL");
-        
+
+        $url = "$apiUrl/games/$id?key=$key";
+
+        $response = Http::get($url);
+
+        return $response->object();
+    }
+
+
+    public function searchGame(string $gameSearch): array
+    {
+        $key = env("API_RAWG_KEY");
+        $apiUrl = env("API_URL");
+
         $url = "$apiUrl/games?key=$key&search=$gameSearch";
 
         $response = Http::get($url);
-        
+
         return $response->object()->results;
     }
 

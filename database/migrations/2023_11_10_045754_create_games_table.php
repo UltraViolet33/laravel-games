@@ -15,6 +15,13 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
         });
+
+
+        Schema::table('games', function (Blueprint $table) {
+            $table->string("name");
+            $table->string("imagePath");
+            $table->text("description");
+        });
     }
 
     /**
