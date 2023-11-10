@@ -15,28 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::get('/', [GameController::class, 'index']);
-Route::get('/games', [GameController::class, 'index'])->name('games.index');
+
+
+Route::get('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
 
 Route::post('/games/search', [GameController::class, 'search'])->name("games.search");
-
-
-// Route::resource('games', GameController::class)
-//     ->only(['index', 'search'])
-//     ->middleware(['auth', 'verified']);
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
