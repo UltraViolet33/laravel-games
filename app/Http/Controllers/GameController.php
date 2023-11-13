@@ -4,17 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class GameController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request): View
     {
-
         $games = [];
 
         if ($request->isMethod("post")) {
@@ -28,31 +26,42 @@ class GameController extends Controller
         return view('games.index', ['games' => $games]);
     }
 
+
     public function removeFavoritesGame(int $id, Request $request)
     {
         $game = Game::find($id);
-
         $request->user()->games()->detach($game);
-
         return redirect('/games/favorites');
-
     }
 
     public function addFavorite(int $id, Request $request)
     {
-        $gameDetails =  $this->getDetailsGame($id);
+        // check if the game if already in the db
+        $game = Game::where("idAPIRawg", $id)->first();
 
-        $newGame = new Game();
+        // dd($game->id);
 
-        $newGame->name = $gameDetails->name;
+        if ($game) {
+            foreach (Auth::user()->games as $gameUser) {
+               
+                if ($gameUser->id == $game->id) {
+                    return redirect('/games/favorites');
+                }
+            }
+        }
 
-        $newGame->imagePath = $gameDetails->background_image;
-        $newGame->description = $gameDetails->description;
 
-        $newGame->save();
+        if (!$game) {
+            $gameDetails =  $this->getDetailsGame($id);
+            $game = new Game();
+            $game->name = $gameDetails->name;
+            $game->imagePath = $gameDetails->background_image;
+            $game->description = $gameDetails->description;
+            $game->idAPIRawg = $gameDetails->id;
+            $game->save();
+        }
 
-        $request->user()->games()->attach($newGame->id);
-
+        $request->user()->games()->attach($game->id);
         return redirect('/games/favorites');
     }
 
@@ -60,9 +69,27 @@ class GameController extends Controller
     public function displayFavoriteGames(Request $request)
     {
         $games = $request->user()->games;
-
         return view('games.favorites', ['games' => $games]);
     }
+
+
+    public function displayDetails(int $id)
+    {
+        $game = Game::where("id", $id)->first();
+
+        if (!$game) {
+            $gameDetails = $this->getDetailsGame($id);
+            $game = new Game();
+            $game->name = $gameDetails->name;
+            $game->imagePath = $gameDetails->background_image;
+            $game->description = $gameDetails->description;
+            $game->idAPIRawg = $gameDetails->id;
+            $game->save();
+        }
+
+        return view('games.details', ['game' => $game]);
+    }
+
 
     public function getDetailsGame(int $id)
     {
@@ -70,7 +97,6 @@ class GameController extends Controller
         $apiUrl = env("API_URL");
 
         $url = "$apiUrl/games/$id?key=$key";
-
         $response = Http::get($url);
 
         return $response->object();
@@ -83,57 +109,8 @@ class GameController extends Controller
         $apiUrl = env("API_URL");
 
         $url = "$apiUrl/games?key=$key&search=$gameSearch";
-
         $response = Http::get($url);
 
         return $response->object()->results;
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Game $game)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Game $game)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Game $game)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Game $game)
-    {
-        //
     }
 }

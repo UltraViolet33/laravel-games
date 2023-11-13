@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("name");
             $table->string("imagePath");
             $table->text("description");
+            $table->integer("idAPIRawg");
         });
     }
 

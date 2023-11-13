@@ -27,19 +27,19 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
-// Route::get('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
-
 Route::post('/', [GameController::class, 'index'])->middleware(['auth'])->name('games.index');
+
+
+Route::get('/games/favorites', [GameController::class, 'displayFavoriteGames'])->middleware(['auth'])->name("games.favorites");
+
 
 Route::post('/games/search', [GameController::class, 'search'])->name("games.search");
 
 Route::get('/games/add/{id}', [GameController::class, 'addFavorite'])->name("games.addFavorite");
 
-Route::get('/games/favorites', [GameController::class, 'displayFavoriteGames'])->name("games.favorites");
-
-
 Route::get('/games/remove/{id}', [GameController::class, 'removeFavoritesGame'])->name("games.removeFavorites");
 
+Route::get('/games/details/{id}', [GameController::class, 'displayDetails'])->name("games.details");
 
 
 Route::middleware('auth')->group(function () {
