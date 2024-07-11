@@ -1,8 +1,11 @@
+# Laravel Games
+
+## Installation
 - create the db
 - create env file
 - put your db name in env file
 
-In the env :
+In the env file:
 - API_URL=https://api.rawg.io/api
 - API_RAWG_KEY: put your api key
 
@@ -12,3 +15,4 @@ In the env :
 
 - npm install
 - npm run dev
+- php artisan serve
